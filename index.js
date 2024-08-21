@@ -10,34 +10,70 @@ let drawLine = (x1, y1, x2, y2, color) => {
     ctx.strokeStyle = color;
     ctx.lineWidth = 1;
     ctx.stroke();
-    ctx.closePath();
+}
+
+let offsetX = 0;
+let offsetY = 0;
+let scale = 1;
+
+let screenToWorldX = (x) => {
+    return (x / scale) + offsetX
+}
+
+let screenToWorldY = (y)  => {
+    return (y / scale) + offsetY
+}
+
+let worldToScreenX  = (x) => {
+    return (x - offsetX) * scale
+}
+
+let worldToScreenY =  (y) => {
+    return (y - offsetY) * scale
 }
 
 addEventListener('keydown', (e) => {
-    if (e.key === 'g') {
-        
+    if (e.key === 'ArrowUp') {
+        offsetY -= 5;
+    }
+    if(e.key === 'ArrowDown'){
+        offsetY += 5;
+    }
+    if(e.key === 'ArrowLeft'){
+        offsetX -= 5;
+    }
+    if(e.key === 'ArrowRight'){
+        offsetX += 5;
+    }
+    if(e.key === 'q'){
+        if(scale > 0.1) scale -= 0.1;
+    }
+    if(e.key === 'e'){
+        scale += 0.1;
     }
 })
 
-let backgroundPosition = {
-    x: 0,
-    y: 0
-}
+let lineSpace = 40;
 
-let drawInfiniteGrid = (gridSize, color) => {
-    for (let i = 0; i < gridSize; i++) {
-        for (let j = 0; j < gridSize; j++) {
-            //Using backgroundPosition to draw lines
-            drawLine(backgroundPosition.x + i * 50, backgroundPosition.y + j * 50
-                , backgroundPosition.x + (i + 1) * 50, backgroundPosition.y + j
-                * 50, color);
-        }}}
+let width = screenToWorldX(canvas.width) + lineSpace;
+let height = screenToWorldY(canvas.height) + lineSpace;
+
+
+let drawInfiniteGrid = () => {
+    //horizontal
+    for(let i = -offsetX % lineSpace * scale; i <= width; i += lineSpace * scale){
+        drawLine(i, 0, i, canvas.height, 'rgba(255,255,255)')
+    }
+
+    //vertical
+    for(let j =  -offsetY % lineSpace * scale; j <= height; j += lineSpace * scale){
+        drawLine(0, j, canvas.width, j, 'rgba(255,255,255)')
+    }
+}
 
 let animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillRect(backgroundPosition.x, backgroundPosition.y, canvas.width, canvas.height)
-    backgroundPosition.y++
-    drawInfiniteGrid(100, 'white')
+    drawInfiniteGrid()
     requestAnimationFrame(animate);
 }
 
