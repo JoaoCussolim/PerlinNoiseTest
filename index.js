@@ -3,6 +3,33 @@ let ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+class RNG{
+    constructor(seed, addition){
+        this.seed = seed;
+        this.state = seed;
+        this.addition = addition;
+    }
+    
+    next(){
+        this.state = (this.state + this.addition) % 100000;
+    }
+
+    generate(i){
+        this.next();
+        if(this.state > 1000){
+            drawLine(i, 0, i, canvas.height, 'blue');
+        }else{
+            console.log(this.state)
+            drawLine(i, 0, i, canvas.height, 'green');
+        }
+    }
+}
+
+let actualSeed
+let addition = 1;
+
+let rngTOP = new RNG(actualSeed, addition)
+
 let drawLine = (x1, y1, x2, y2, color) => {
     ctx.beginPath();
     ctx.moveTo(x1, y1);
@@ -10,48 +37,48 @@ let drawLine = (x1, y1, x2, y2, color) => {
     ctx.strokeStyle = color;
     ctx.lineWidth = 1;
     ctx.stroke();
-}
+};
 
 let offsetX = 0;
 let offsetY = 0;
 let scale = 1;
 
 let screenToWorldX = (x) => {
-    return (x / scale) + offsetX
-}
+    return (x / scale) + offsetX;
+};
 
 let screenToWorldY = (y)  => {
-    return (y / scale) + offsetY
-}
+    return (y / scale) + offsetY;
+};
 
 let worldToScreenX  = (x) => {
-    return (x - offsetX) * scale
-}
+    return (x - offsetX) * scale;
+};
 
 let worldToScreenY =  (y) => {
-    return (y - offsetY) * scale
-}
+    return (y - offsetY) * scale;
+};
 
 addEventListener('keydown', (e) => {
     if (e.key === 'ArrowUp') {
         offsetY -= 5;
-    }
+    };
     if(e.key === 'ArrowDown'){
         offsetY += 5;
-    }
+    };
     if(e.key === 'ArrowLeft'){
         offsetX -= 5;
-    }
+    };
     if(e.key === 'ArrowRight'){
         offsetX += 5;
-    }
+    };
     if(e.key === 'q'){
-        if(scale > 0.1) scale -= 0.1;
-    }
+        if(scale > 0.5) scale -= 0.1;
+    };
     if(e.key === 'e'){
         scale += 0.1;
-    }
-})
+    };
+});
 
 let lineSpace = 40;
 
@@ -62,19 +89,19 @@ let height = screenToWorldY(canvas.height) + lineSpace;
 let drawInfiniteGrid = () => {
     //horizontal
     for(let i = -offsetX % lineSpace * scale; i <= width; i += lineSpace * scale){
-        drawLine(i, 0, i, canvas.height, 'rgba(255,255,255)')
-    }
+        drawLine(i, 0, i, canvas.height, 'rgba(255,255,255)');
+    };
 
     //vertical
     for(let j =  -offsetY % lineSpace * scale; j <= height; j += lineSpace * scale){
-        drawLine(0, j, canvas.width, j, 'rgba(255,255,255)')
-    }
-}
+        drawLine(0, j, canvas.width, j, 'rgba(255,255,255)');
+    };
+};
 
 let animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawInfiniteGrid()
+    drawInfiniteGrid();
     requestAnimationFrame(animate);
-}
+};
 
-animate()
+animate();
