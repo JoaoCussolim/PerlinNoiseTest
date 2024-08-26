@@ -58,32 +58,35 @@ let lineSpace = 50;
 let width = screenToWorldX(canvas.width) + lineSpace;
 let height = screenToWorldY(canvas.height) + lineSpace;
 
-class RNG {
-    constructor(seed) {
-        this.m = 0x80000000;
-        this.a = 1103515245;
-        this.c = 12345;
-
-        this.state = seed ? seed : Math.floor(Math.random() * (this.m - 1));
+class RandomNumberGenerator {
+    constructor(seed = 0xdeadbeef) {
+        this.state = seed
     }
 
-    nextInt() {
-        this.state = (this.a * this.state + this.c) % this.m;
-        return this.state;
+    next() {
+        this.state ^= (this.state >> 13)
+        this.state ^= (this.state << 17)
+        this.state ^= (this.state >> 19)
+        return this.state
     }
 
-    nextFloat() {
-        return this.nextInt() / (this.m - 1)
+    nextFloat(min, max) {
+        // Generate a float between 0 (inclusive) and 1 (exclusive)
+        const randomFloat = (this.next() >>> 0) / 0xFFFFFFFF * 2;
+        // Scale to the range [min, max]
+        return min + (max - min) * randomFloat;
     }
 
-    nextRange(start, end) {
-        let rangeSize = end - start
-        let randomUnder1 = this.nextInt() / this.m
-        return start + Math.floor(randomUnder1 * rangeSize)
+    nextInt(min, max) {
+        // Generate a random integer within the range [0, 2^32 - 1]
+        const range = max - min + 1;
+        const randomInt = (this.next() >>> 0) % range;
+        // Scale to the range [min, max]
+        return min + randomInt;
     }
 
     static randomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+        return Math.floor(Math.random() * (max - min + 1) + min);
     }
 }
 
@@ -95,77 +98,49 @@ let canvasResize = (window) => {
 }
 
 let drawPoints = (x, y) => {
-    let rng = new RNG(x * 10000 + y);
+    let rng = new RandomNumberGenerator(x * 10000 + y);
     let position = { x: x, y: y }
     let size = lineSpace * scale
     let center = {
         x: position.x - size / 2,
         y: position.y - size / 2
     }
-    let color = rng.nextRange(0, 80)
-    let rng2 = new RNG(color);
-    let color2 = rng2.nextRange(0, 80)
-    let rng3 = new RNG(color2);
-    let color3 = rng3.nextRange(0, 80)
-    ctx.fillStyle = `rgba(${color}, ${color2}, ${color3})`
-    ctx.fillRect(position.x - size, position.y - size, size, size)
-    for (let i = 0; i < 10; i++) {
-        let chunk = {
-            x: position.x,
-            y: position.y
-        }
-        chunks.push(chunk)
-    }
-}
-
-let chunks = []
-
-let createChunks = (x, y) => {
-    let rng = new RNG(x * 10000 + y);
-    let size = lineSpace * scale
-    let color = rng.nextRange(0, 80)
-    let rng2 = new RNG(color);
-    let color2 = rng2.nextRange(0, 80)
-    let rng3 = new RNG(color2);
-    let color3 = rng3.nextRange(0, 80)
-    for (let i = 0; i <= width; i++) {
-        let chunk = {
-            position: {
-                x: x - size,
-                y: y - size
-            },
-            size: size,
-            color: `rgba(${color}, ${color2}, ${color3})`,
-        }
-        chunks.push(chunk)
-    }
-}
-
-let drawChunks = (x) => {
-    let chunk = chunks[x];
-    ctx.fillStyle = chunk.color
-    ctx.fillRect(chunk.position.x, chunk.position.y, chunk.size, chunk.size)
-}
-
-
-updateChunks = (x, y) => {
-    //checking if chunk is not created
-    console.log(chunks)
-    drawChunks(x)
+    let r = rng.nextInt(0, 255);
+    let g = rng.nextInt(0, 255);
+    let b = rng.nextInt(0, 255);
+    ctx.fillStyle = `rgba(${r}, ${g}, ${b})`
+    ctx.fillRect(worldToScreenX(position.x), worldToScreenY(position.y), size, size)
 }
 
 let drawInfiniteGrid = () => {
-    //horizontal
-    for (let i = -offsetX % (lineSpace * scale); i <= width; i += lineSpace * scale) {
-        //vertical
-        for (let j = -offsetY % (lineSpace * scale); j <= height; j += lineSpace * scale) {
-            if(chunks.length < 1) createChunks(i, j)
-            updateChunks(i, j)
-            drawLine(i, 0, i, canvas.height, 'rgba(255, 255, 255)');
-            drawLine(0, j, canvas.width, j, 'rgba(255, 255, 255)');
-        };
-    };
+    const stw0x = screenToWorldX(0);
+    const stw0y = screenToWorldY(0);
+
+    const initialX = Math.floor(stw0x / lineSpace) * lineSpace;
+    const initialY = Math.floor(stw0y / lineSpace) * lineSpace;
+
+    const stw1x = screenToWorldX(canvas.width);
+    const stw1y = screenToWorldY(canvas.height);
+
+    const finalX = Math.ceil(stw1x / lineSpace) * lineSpace;
+    const finalY = Math.ceil(stw1y / lineSpace) * lineSpace;
+
+    for (let y = initialY; y < finalY; y += lineSpace) {
+        for (let x = initialX; x < finalX; x += lineSpace) {
+            drawPoints(x, y);
+        }
+    }
+
+    for (let y = initialY; y < finalY; y += lineSpace) {
+        drawLine(0, worldToScreenY(y), canvas.width, worldToScreenY(y), 'white')
+    }
+
+    for (let x = initialX; x < finalX; x += lineSpace) {
+        drawLine(worldToScreenX(x), 0, worldToScreenX(x), canvas.height, 'white')
+    }
 }
+
+const rng = new RandomNumberGenerator()
 
 let animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
