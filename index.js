@@ -100,6 +100,7 @@ let drawInfiniteGrid = () => {
         }
     }
 
+<<<<<<< Updated upstream
     for (let y = initialY; y < finalY; y += lineSpace) {
         drawLine(0, worldToScreenY(y), canvas.width, worldToScreenY(y), 'white')
     }
@@ -107,13 +108,54 @@ let drawInfiniteGrid = () => {
     for (let x = initialX; x < finalX; x += lineSpace) {
         drawLine(worldToScreenX(x), 0, worldToScreenX(x), canvas.height, 'white')
     }
+=======
+let noiseGenerated = false
+const rng = new RandomNumberGenerator()
+
+let noiseSeed2D = []
+let perlinNoise2D = []
+let nOutputWidth = screenToWorldX(canvas.width)
+let nOutputHeight = screenToWorldY(canvas.height)
+let octaveCount = 2
+
+
+let drawNoise = () => {
+
+    const stw0x = screenToWorldX(0);
+    const stw0y = screenToWorldY(0);
+
+    const initialX = Math.floor(stw0x / lineSpace) * lineSpace;
+    const initialY = Math.floor(stw0y / lineSpace) * lineSpace;
+
+    nOutputWidth = screenToWorldX(canvas.width)
+    nOutputHeight = screenToWorldY(canvas.height)
+
+    const finalX = Math.ceil(nOutputWidth / lineSpace) * lineSpace;
+    const finalY = Math.ceil(nOutputHeight / lineSpace) * lineSpace;
+
+    const noise = new Chunk(680, initialX, initialY, finalX, finalY, noiseSeed2D, octaveCount, perlinNoise2D)
+
+    if (!noiseGenerated) {
+        noiseGenerated = true
+        noise.generate()
+    }
+
+    noise.update(offsetX, offsetY)
+>>>>>>> Stashed changes
 }
 
 const rng = new RandomNumberGenerator()
 
 let animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+<<<<<<< Updated upstream
     drawInfiniteGrid();
+=======
+    //drawPixels();
+    drawNoise();
+    drawGrid();
+
+>>>>>>> Stashed changes
     requestAnimationFrame(animate);
 }
 
