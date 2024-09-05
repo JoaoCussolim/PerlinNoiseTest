@@ -1,8 +1,3 @@
-<<<<<<< Updated upstream
-class PerlinNoise{
-    
-}
-=======
 class PerlinNoise {
     constructor(initialX, initialY, finalX, finalY, seed, octaves, output) {
         this.initialX = initialX
@@ -206,4 +201,3 @@ class Chunk {
         this.draw(xOffset, yOffset)
     }
 }
->>>>>>> Stashed changes

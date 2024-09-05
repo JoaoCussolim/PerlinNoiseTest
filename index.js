@@ -100,15 +100,6 @@ let drawInfiniteGrid = () => {
         }
     }
 
-<<<<<<< Updated upstream
-    for (let y = initialY; y < finalY; y += lineSpace) {
-        drawLine(0, worldToScreenY(y), canvas.width, worldToScreenY(y), 'white')
-    }
-
-    for (let x = initialX; x < finalX; x += lineSpace) {
-        drawLine(worldToScreenX(x), 0, worldToScreenX(x), canvas.height, 'white')
-    }
-=======
 let noiseGenerated = false
 const rng = new RandomNumberGenerator()
 
@@ -141,21 +132,16 @@ let drawNoise = () => {
     }
 
     noise.update(offsetX, offsetY)
->>>>>>> Stashed changes
 }
 
 const rng = new RandomNumberGenerator()
 
 let animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-<<<<<<< Updated upstream
-    drawInfiniteGrid();
-=======
     //drawPixels();
     drawNoise();
     drawGrid();
 
->>>>>>> Stashed changes
     requestAnimationFrame(animate);
 }
 
