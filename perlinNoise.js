@@ -119,10 +119,9 @@ class Chunk {
         this.valid = true;
     }
 
-    updateChunks(Ix, Iy, chunkValueX, chunkValueY){
+    updateChunks(Ix, Iy, chunkValueX, chunkValueY) {
         for (let x = Ix; x < chunkValueX; x += lineSpace) {
             for (let y = Iy; y < chunkValueY; y += lineSpace) {
-
                 let fNoise = 0;
                 let scaleAcc = 0
                 let perlinScale = 1
@@ -148,18 +147,32 @@ class Chunk {
         }
     }
 
+    updateSeed(Fx, Fy) {
+        if (Fx * Fy < 0) {
+            for (let i = Fx * Fy; i > -(Fx * Fy); i--) {
+                if (!this.seed[i]) this.seed[i] = rng.nextFloat(0, 1)
+            }
+        }
+        else {
+            for (let i = Fx * Fy; i > -(Fx * Fy); i--) {
+                if (!this.seed[i]) this.seed[i] = rng.nextFloat(0, 1)
+            }
+        }
+    }
+
     getVisible(viewWidth, viewHeight) {
         const stwChunkx = screenToWorldX(this.chunkSize + viewWidth)
         const stwChunky = screenToWorldY(this.chunkSize + viewHeight)
 
-        
+
         const visibleSection = [];
         for (let y = this.initialY; y < stwChunky; y += lineSpace) {
             for (let x = this.initialX; x < stwChunkx; x += lineSpace) {
-                if(!this.output[y * this.chunkSize + x]){
+                if (!this.output[y * this.chunkSize + x]) {
+                    this.updateSeed(stwChunkx, stwChunky)
                     this.updateChunks(x, y, stwChunkx, stwChunky)
                 }
-                visibleSection.push({   
+                visibleSection.push({
                     x: x,
                     y: y,
                     value: this.output[y * this.chunkSize + x]
@@ -175,7 +188,7 @@ class Chunk {
             let pixelBw = Math.floor(value * 11);
             let bg_col = 'grey';
             switch (pixelBw) {
-                case 0: bg_col  = 'black'; break;
+                case 0: bg_col = 'black'; break;
                 case 1: bg_col = 'white'; break;
                 case 2: bg_col = 'blue'; break;
                 case 3: bg_col = 'red'; break;
@@ -197,7 +210,7 @@ class Chunk {
         }
     }
 
-    update(xOffset, yOffset){
+    update(xOffset, yOffset) {
         this.draw(xOffset, yOffset)
     }
 }
