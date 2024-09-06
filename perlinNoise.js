@@ -7,9 +7,6 @@ class PerlinNoise {
         this.seed = seed
         this.octaves = octaves
         this.output = output
-        this.lastPerlinScale = 0
-        this.lastScaleAcc = 0
-        this.lastfNoise = 0
     }
 
     generateNoise() {
@@ -36,9 +33,6 @@ class PerlinNoise {
                     perlinScale /= 2
                 }
                 this.output[y * this.finalX + x] = fNoise / scaleAcc
-                this.lastPerlinScale = perlinScale
-                this.lastScaleAcc = scaleAcc
-                this.lastfNoise = fNoise
             }
         }
     }
@@ -119,71 +113,69 @@ class Chunk {
         this.valid = true;
     }
 
-    updateChunks(Ix, Iy, chunkValueX, chunkValueY) {
-        for (let x = Ix; x < chunkValueX; x += lineSpace) {
-            for (let y = Iy; y < chunkValueY; y += lineSpace) {
-                let fNoise = 0;
-                let scaleAcc = 0
-                let perlinScale = 1
-                let nPitch = this.chunkSize;
-                for (let o = 0; o < this.octaves; o++) {
-                    nPitch = Math.max(1, Math.floor(nPitch / 2));
-                    let nSample1X = Math.floor(x / nPitch) * nPitch;
-                    let nSample1Y = Math.floor(y / nPitch) * nPitch;
-                    let nSample2X = (nSample1X + nPitch) % this.chunkSize
-                    let nSample2Y = (nSample1Y + nPitch) % this.chunkSize
-                    let fBlendX = (x - nSample1X) / nPitch
-                    let fBlendY = (y - nSample1Y) / nPitch
+    updateChunks(Ix, Iy) {
+        let fNoise = 0;
+        let scaleAcc = 0
+        let perlinScale = 1
+        let nPitch = this.chunkSize;
+        for (let o = 0; o < this.octaves; o++) {
+            nPitch = Math.max(1, Math.floor(nPitch / 2));
+            let nSample1X = Math.floor(Ix / nPitch) * nPitch;
+            let nSample1Y = Math.floor(Iy / nPitch) * nPitch;
+            let nSample2X = (nSample1X + nPitch) % this.chunkSize
+            let nSample2Y = (nSample1Y + nPitch) % this.chunkSize
+            let fBlendX = (Ix - nSample1X) / nPitch
+            let fBlendY = (Iy - nSample1Y) / nPitch
 
-                    let fSampleT = (1 - fBlendX) * this.seed[nSample1Y * this.chunkSize + nSample1X] + fBlendX * this.seed[nSample1Y * this.chunkSize + nSample2X]
-                    let fSampleB = (1 - fBlendX) * this.seed[nSample2Y * this.chunkSize + nSample1X] + fBlendX * this.seed[nSample2Y * this.chunkSize + nSample2X]
-                    fNoise += (fBlendY * (fSampleB - fSampleT) + fSampleT) * perlinScale
-                    scaleAcc += perlinScale
+            let fSampleT = (1 - fBlendX) * this.seed[nSample1Y * this.chunkSize + nSample1X] + fBlendX * this.seed[nSample1Y * this.chunkSize + nSample2X]
+            let fSampleB = (1 - fBlendX) * this.seed[nSample2Y * this.chunkSize + nSample1X] + fBlendX * this.seed[nSample2Y * this.chunkSize + nSample2X]
+            fNoise += (fBlendY * (fSampleB - fSampleT) + fSampleT) * perlinScale
+            scaleAcc += perlinScale
 
-                    perlinScale /= 2
-                }
-                this.output[y * this.chunkSize + x] = fNoise / scaleAcc
-            }
+            perlinScale /= 2
+        }
+        if (!this.output[Iy * this.chunkSize + Ix]) this.output[Iy * this.chunkSize + Ix] = fNoise / scaleAcc
+    }
+
+    updateNegativeSeed(Fx, Fy) {
+        for (let i = -(Fx * Fy); i < (Fx * Fy); i++) {
+            if (!this.seed[i]) this.seed[i] = rng.nextFloat(0, 1)
         }
     }
 
-    updateSeed(Fx, Fy) {
-        if (Fx * Fy < 0) {
-            for (let i = Fx * Fy; i > -(Fx * Fy); i--) {
-                if (!this.seed[i]) this.seed[i] = rng.nextFloat(0, 1)
-            }
-        }
-        else {
-            for (let i = Fx * Fy; i > -(Fx * Fy); i--) {
-                if (!this.seed[i]) this.seed[i] = rng.nextFloat(0, 1)
-            }
+    updatePositiveSeed(Fx, Fy) {
+        for (let i = 0; i < (Fx * Fy); i++) {
+            if (!this.seed[i]) this.seed[i] = rng.nextFloat(0, 1)
         }
     }
 
-    getVisible(viewWidth, viewHeight) {
-        const stwChunkx = screenToWorldX(this.chunkSize + viewWidth)
-        const stwChunky = screenToWorldY(this.chunkSize + viewHeight)
-
+    getVisible() {
+        const stwChunkx = screenToWorldX(canvas.width) + lineSpace
+        const stwChunky = screenToWorldY(canvas.height) + lineSpace
 
         const visibleSection = [];
         for (let y = this.initialY; y < stwChunky; y += lineSpace) {
             for (let x = this.initialX; x < stwChunkx; x += lineSpace) {
-                if (!this.output[y * this.chunkSize + x]) {
-                    this.updateSeed(stwChunkx, stwChunky)
-                    this.updateChunks(x, y, stwChunkx, stwChunky)
+                let outputIndex = y * this.chunkSize + x
+                if (!this.output[outputIndex]) {
+                    if (!this.seed[outputIndex]) {
+                        this.updateNegativeSeed(x, y)
+                    }
+                    this.updateChunks(x, y)
+
                 }
                 visibleSection.push({
                     x: x,
                     y: y,
-                    value: this.output[y * this.chunkSize + x]
+                    value: this.output[outputIndex]
                 });
             }
         }
         return visibleSection;
     }
 
-    draw(xOffset, yOffset) {
-        const visibleSection = this.getVisible(xOffset, yOffset, Math.ceil(canvas.width / lineSpace) * lineSpace, Math.ceil(canvas.height / lineSpace) * lineSpace);
+    draw() {
+        const visibleSection = this.getVisible();
         for (const { x, y, value } of visibleSection) {
             let pixelBw = Math.floor(value * 11);
             let bg_col = 'grey';
@@ -210,7 +202,7 @@ class Chunk {
         }
     }
 
-    update(xOffset, yOffset) {
-        this.draw(xOffset, yOffset)
+    update() {
+        this.draw()
     }
 }

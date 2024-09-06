@@ -133,27 +133,26 @@ let octaveCount = 2
 
 
 let drawNoise = () => {
-
     const stw0x = screenToWorldX(0);
     const stw0y = screenToWorldY(0);
 
     const initialX = Math.floor(stw0x / lineSpace) * lineSpace;
     const initialY = Math.floor(stw0y / lineSpace) * lineSpace;
 
-    nOutputWidth = screenToWorldX(canvas.width)
-    nOutputHeight = screenToWorldY(canvas.height)
+    nOutputWidth = screenToWorldX(canvas.width) + lineSpace
+    nOutputHeight = screenToWorldY(canvas.height) + lineSpace
 
     const finalX = Math.ceil(nOutputWidth / lineSpace) * lineSpace;
     const finalY = Math.ceil(nOutputHeight / lineSpace) * lineSpace;
 
-    const noise = new Chunk(800, initialX, initialY, finalX, finalY, noiseSeed2D, octaveCount, perlinNoise2D)
+    const noise = new Chunk(500, initialX, initialY, finalX, finalY, noiseSeed2D, octaveCount, perlinNoise2D)
 
     if (!noiseGenerated) {
         noiseGenerated = true
         noise.generate()
     }
 
-    noise.update(offsetX, offsetY)
+    noise.update()
 }
 
 let animate = () => {
