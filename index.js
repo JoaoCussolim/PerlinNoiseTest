@@ -158,7 +158,7 @@ let drawNoise = () => {
 let animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     //drawPixels();
-    drawNoise();
+    //drawNoise();
     drawGrid();
 
     requestAnimationFrame(animate);

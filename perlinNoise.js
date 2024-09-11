@@ -149,6 +149,13 @@ class Chunk {
         }
     }
 
+    updateSeed(Fx, Fy){
+        for (let i = 0; i < (Fx * Fy); i++) {
+            if (!this.seed[i]) this.seed[i] = rng.nextFloat(0, 1)
+            if (!this.seed[-i]) this.seed[-i] = rng.nextFloat(0, 1)
+        }
+    }   
+
     getVisible() {
         const stwChunkx = screenToWorldX(canvas.width) + lineSpace
         const stwChunky = screenToWorldY(canvas.height) + lineSpace
@@ -159,7 +166,7 @@ class Chunk {
                 let outputIndex = y * this.chunkSize + x
                 if (!this.output[outputIndex]) {
                     if (!this.seed[outputIndex]) {
-                        this.updateNegativeSeed(x, y)
+                        this.updateSeed(x, y)
                     }
                     this.updateChunks(x, y)
 
