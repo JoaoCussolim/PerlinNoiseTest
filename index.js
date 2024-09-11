@@ -46,10 +46,10 @@ addEventListener('keydown', (e) => {
         offsetX += 5;
     }
     if (e.key === 'q') {
-        if(octaveCount > 1) octaveCount--
+        if (octaveCount > 1) octaveCount--
     }
     if (e.key === 'e') {
-        if(octaveCount < 8) octaveCount++
+        if (octaveCount < 8) octaveCount++
     }
 })
 
@@ -155,10 +155,15 @@ let drawNoise = () => {
     noise.update()
 }
 
+const testBiome = new Biome({ biomeSize: 2000 })
+
+
+
 let animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     //drawPixels();
     //drawNoise();
+    testBiome.draw();
     drawGrid();
 
     requestAnimationFrame(animate);
