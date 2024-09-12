@@ -34,16 +34,16 @@ let worldToScreenY = (y) => {
 
 addEventListener('keydown', (e) => {
     if (e.key === 'ArrowUp') {
-        offsetY -= 5;
+        offsetY -= 15;
     }
     if (e.key === 'ArrowDown') {
-        offsetY += 5;
+        offsetY += 15;
     }
     if (e.key === 'ArrowLeft') {
-        offsetX -= 5;
+        offsetX -= 15;
     }
     if (e.key === 'ArrowRight') {
-        offsetX += 5;
+        offsetX += 15;
     }
     if (e.key === 'q') {
         if (octaveCount > 1) octaveCount--
@@ -155,20 +155,23 @@ let drawNoise = () => {
     noise.update()
 }
 
-const testBiome = new Biome({ biomeSize: 2000 })
-
-
+const biomes = [
+    new Biome({ biomeSize: 20, biomeImages: ['./images/Grass1.png', './images/Grass2.png', './images/Grass3.png'] }),
+    /*new Biome({ biomeSize: 20, biomeImages: ['./images/Grass_Middle.png', './images/Water_Middle.png', './images/Grass1.png'] })*/
+]
 
 let animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     //drawPixels();
     //drawNoise();
-    testBiome.draw();
+    biomes.forEach(biome => {
+        biome.draw()
+    })
     drawGrid();
 
     requestAnimationFrame(animate);
 }
 
-addEventListener("resize", (event) => { canvasResize(window) });
+//addEventListener("resize", (event) => { canvasResize(window) });
 
 animate();

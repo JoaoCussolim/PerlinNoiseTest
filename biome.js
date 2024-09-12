@@ -1,30 +1,26 @@
 class Biome {
-    constructor({ biomeSize = 0, position = { x: 0, y: 0 }}) {
+    constructor({ biomeSize = 0, biomeImages = []}) {
         this.biomeSize = biomeSize * biomeSize;
         this.size = lineSpace * scale
-        this.position = position
-        this.biomeValues = 10
+        this.biomeImages = biomeImages
     }
     generateBiome(x, y) {
         const seed = x * 100000 + y
         const rng = new RandomNumberGenerator(seed)
-        let r
-        let g
-        let b
-        if(rng.nextInt(0, 500) < 350){
-            r = 0
-            g = 100
-            b = 0
-        }else{
-            r = 0
-            g = 0
-            b = 100
+        let image = new Image()
+        let nextIntValue = rng.nextInt(0, 500)
+        if (nextIntValue < 200) {
+            image.src = this.biomeImages[0]
+        } else if (nextIntValue < 300) {
+            image.src = this.biomeImages[1]
+        } else {
+            image.src = this.biomeImages[2]
         }
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b})`
-        ctx.fillRect(worldToScreenX(x), worldToScreenY(y), this.size, this.size)
+        ctx.drawImage(image, worldToScreenX(x), worldToScreenY(y), this.size, this.size)
     }
-    updateBiome(x,y){
-        if(Math.abs(x * y) <= this.biomeSize){
+    updateBiome(x, y) {
+        const halfSize = this.biomeSize / 2
+        if (Math.abs(x) <= halfSize && Math.abs(y) <= halfSize) {
             this.generateBiome(x, y)
         }
     }
