@@ -1,26 +1,26 @@
 class Biome {
-    constructor({ biomeSize = 0, biomeImages = []}) {
-        this.biomeSize = biomeSize * biomeSize;
+    constructor({ Infinite = Boolean, biomeImages = [], blockProbabilities = []}) {
         this.size = lineSpace * scale
+        this.Infinite = Infinite
         this.biomeImages = biomeImages
+        this.blockProbabilities = blockProbabilities
     }
     generateBiome(x, y) {
         const seed = x * 100000 + y
         const rng = new RandomNumberGenerator(seed)
         let image = new Image()
-        let nextIntValue = rng.nextInt(0, 500)
-        if (nextIntValue < 200) {
-            image.src = this.biomeImages[0]
-        } else if (nextIntValue < 300) {
+        const probability = 0
+        let nextValue = rng.nextInt(0, this.blockProbabilities somadas)
+        image.src = this.biomeImages[0]
+        if(nextValue < this.blockProbabilities[0]){
             image.src = this.biomeImages[1]
-        } else {
-            image.src = this.biomeImages[2]
         }
+        else if (nextValue < this.blockProbabilities[1])
+
         ctx.drawImage(image, worldToScreenX(x), worldToScreenY(y), this.size, this.size)
     }
     updateBiome(x, y) {
-        const halfSize = this.biomeSize / 2
-        if (Math.abs(x) <= halfSize && Math.abs(y) <= halfSize) {
+        if (this.Infinite) {
             this.generateBiome(x, y)
         }
     }
@@ -36,6 +36,8 @@ class Biome {
 
         const finalX = Math.ceil(stw1x / lineSpace) * lineSpace;
         const finalY = Math.ceil(stw1y / lineSpace) * lineSpace;
+
+        this.size = lineSpace * scale
 
         for (let y = initialY; y < finalY; y += lineSpace) {
             for (let x = initialX; x < finalX; x += lineSpace) {

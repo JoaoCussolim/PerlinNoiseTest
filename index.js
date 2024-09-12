@@ -46,10 +46,10 @@ addEventListener('keydown', (e) => {
         offsetX += 15;
     }
     if (e.key === 'q') {
-        if (octaveCount > 1) octaveCount--
+        if (scale > 1) scale--
     }
     if (e.key === 'e') {
-        if (octaveCount < 8) octaveCount++
+        if (scale < 8) scale++
     }
 })
 
@@ -155,19 +155,17 @@ let drawNoise = () => {
     noise.update()
 }
 
-const biomes = [
-    new Biome({ biomeSize: 20, biomeImages: ['./images/Grass1.png', './images/Grass2.png', './images/Grass3.png'] }),
-    /*new Biome({ biomeSize: 20, biomeImages: ['./images/Grass_Middle.png', './images/Water_Middle.png', './images/Grass1.png'] })*/
-]
+const biome = new Biome({ Infinite: true, biomeImages: ['./images/grass1.png', './images/grass2.png', './images/grass3.png', './images/grass4.png', './images/grass5.png'] })
 
 let animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.imageSmoothingEnabled = false
     //drawPixels();
     //drawNoise();
-    biomes.forEach(biome => {
-        biome.draw()
-    })
-    drawGrid();
+    biome.draw()
+    //world.updateBiomes()
+    //world.generateWorld()
+    //drawGrid();
 
     requestAnimationFrame(animate);
 }
