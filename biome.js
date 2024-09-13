@@ -12,13 +12,19 @@ class Biome {
         let image = new Image()
         let randomItem = rng.nextInt(1, this.listLimit - 1)
         let nextValue = rng.nextFloat(0, 1)
+        const lakeRarity = rng.nextFloat(0, 1)
         image.src = this.terrainImages[0]
-        if (nextValue > this.blockRarities[randomItem]) {
-            image.src = this.terrainImages[randomItem]
+        if (lakeRarity > 0.9) {
+            this.lake(x, y)
         }
-        this.biomeList[seed] = {
-            image: image,
-            position: { x: x, y: y }
+        else {
+            if (nextValue > this.blockRarities[randomItem]) {
+                image.src = this.terrainImages[randomItem]
+            }
+            this.biomeList[seed] = {
+                image: image,
+                position: { x: x, y: y }
+            }
         }
     }
     stableBiome(seed, x, y) {
@@ -50,16 +56,16 @@ class Biome {
         }
     }
     lake(x, y) {
-        const lakeSize = 100
+        const lakeSize = 1
         let image = new Image()
-        image.src = './images/stones.png'
-        for (let i = x; i < x + lakeSize; i++) {
-            for (let j = y; j < y + lakeSize; j++) {
-                const seed = i * 100000 + j
-                this.biomeList[seed] = {
-                    image: image,
-                    position: { x: i, y: j }
-                }
+        image.src = './images/grassborderdown.png'
+        for (let i = 0; i < this.size * lakeSize; i += this.size) {
+            const currentX = x + i
+            const currentY = y + i
+            const seed = currentX * 100000 + currentY
+            this.biomeList[seed] = {
+                image: image,
+                position: { x: currentX, y: currentY }
             }
         }
     }
