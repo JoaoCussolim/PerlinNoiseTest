@@ -49,11 +49,11 @@ addEventListener('keydown', (e) => {
         if (scale > 1) scale--
     }
     if (e.key === 'e') {
-        if (scale < 8) scale++
+        if (scale < 12) scale++
     }
 })
 
-let lineSpace = 50;
+let lineSpace = 30;
 
 let width = screenToWorldX(canvas.width) + lineSpace;
 let height = screenToWorldY(canvas.height) + lineSpace;
@@ -156,7 +156,10 @@ let drawNoise = () => {
 }
 
 const biomeValues = {
-    terrainImages: ['./images/grass.png', './images/tallgrass.png', './images/flower.png', './images/flower2.png', './images/mushroom.png', './images/mushroom2.png', './images/stones.png', './images/stones2.png' ],
+    terrainImages: ['./images/grass.png', './images/tallgrass.png', './images/flower.png', './images/flower2.png', './images/mushroom.png', './images/mushroom2.png', './images/stones.png', './images/stones2.png'],
+    treeImages: [],
+    waterImages: [],
+    structureImages: [],
     blockRarities: [0, 0.2, 0.98, 0.98, 0.99, 0.98, 0.98, 0.98],
     isInfinite: true,
 }

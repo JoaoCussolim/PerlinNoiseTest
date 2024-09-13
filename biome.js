@@ -6,26 +6,34 @@ class Biome {
         this.blockRarities = blockRarities
         this.listLimit = terrainImages.length
         this.biomeList = []
+        this.treeList = []
     }
     generateBiome(seed, x, y) {
         const rng = new RandomNumberGenerator(seed)
         let image = new Image()
         let randomItem = rng.nextInt(1, this.listLimit - 1)
         let nextValue = rng.nextFloat(0, 1)
-        const lakeRarity = rng.nextFloat(0, 1)
         image.src = this.terrainImages[0]
-        if (lakeRarity > 0.9) {
-            this.lake(x, y)
-        }
-        else {
+        const normalFloor = new Image()
+        normalFloor.src = this.terrainImages[0]
             if (nextValue > this.blockRarities[randomItem]) {
                 image.src = this.terrainImages[randomItem]
+            }
+            if(image.src === normalFloor.src){
+                let randomValue = rng.nextFloat(0, 1)
+                if(randomValue > 0.9){
+                    let treeImage = new Image()
+                    treeImage.src = './images/tree1.png'
+                    this.treeList[seed] = {
+                        image: treeImage,
+                        position: {x: x, y: y}
+                    }
+                }
             }
             this.biomeList[seed] = {
                 image: image,
                 position: { x: x, y: y }
             }
-        }
     }
     stableBiome(seed, x, y) {
         const rng = new RandomNumberGenerator(seed)
@@ -36,17 +44,21 @@ class Biome {
         if (nextValue > this.blockRarities[randomItem]) {
             image.src = this.terrainImages[randomItem]
         }
-
-        if (offsetX == 0) {
-            this.lake(x, y)
-        }
-        else {
-            this.biomeList[seed] = {
-                image: image,
-                position: { x: x, y: y }
+        if(image.src === this.terrainImages[0]){
+            let randomValue = rng.nextFloat(0, 1)
+            if(randomValue > 0.9){
+                let treeImage = new Image()
+                treeImage.src = './images/tree1.png'
+                this.treeList[seed] = {
+                    image: treeImage,
+                    position: {x: x, y: y}
+                }
             }
         }
-        //ctx.drawImage(image, x, y, this.size, this.size)
+        this.biomeList[seed] = {
+            image: image,
+            position: { x: x, y: y }
+        }
     }
     updateBiome(seed, x, y) {
         if (this.Infinite && !this.biomeList[seed]) {
@@ -55,20 +67,7 @@ class Biome {
             this.stableBiome(seed, x, y)
         }
     }
-    lake(x, y) {
-        const lakeSize = 1
-        let image = new Image()
-        image.src = './images/grassborderdown.png'
-        for (let i = 0; i < this.size * lakeSize; i += this.size) {
-            const currentX = x + i
-            const currentY = y + i
-            const seed = currentX * 100000 + currentY
-            this.biomeList[seed] = {
-                image: image,
-                position: { x: currentX, y: currentY }
-            }
-        }
-    }
+  
     draw() {
         const stw0x = screenToWorldX(0);
         const stw0y = screenToWorldY(0);
@@ -89,6 +88,7 @@ class Biome {
                 const seed = x * 100000 + y
                 this.updateBiome(seed, x, y);
                 ctx.drawImage(this.biomeList[seed].image, worldToScreenX(this.biomeList[seed].position.x), worldToScreenY(this.biomeList[seed].position.y), this.size, this.size)
+                if(this.treeList.length > 4) ctx.drawImage(this.treeList[seed].image, worldToScreenX(this.treeList[seed].position.x), worldToScreenY(this.treeList[seed].position.y), this.size, this.size)
             }
         }
     }
