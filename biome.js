@@ -1,27 +1,40 @@
 class Biome {
-    constructor({ Infinite = Boolean, biomeImages = [], blockProbabilities = []}) {
+    constructor({ Infinite = Boolean, biomeImages = [], blockRarities = [] }) {
         this.size = lineSpace * scale
         this.Infinite = Infinite
         this.biomeImages = biomeImages
-        this.blockProbabilities = blockProbabilities
+        this.blockRarities = blockRarities
+        this.listLimit = biomeImages.length
     }
     generateBiome(x, y) {
         const seed = x * 100000 + y
         const rng = new RandomNumberGenerator(seed)
         let image = new Image()
-        const probability = 0
-        let nextValue = rng.nextInt(0, this.blockProbabilities somadas)
+        let randomItem = rng.nextInt(1, this.listLimit-1)
+        let nextValue = rng.nextFloat(0, 1)
         image.src = this.biomeImages[0]
-        if(nextValue < this.blockProbabilities[0]){
-            image.src = this.biomeImages[1]
+        if(nextValue > this.blockRarities[randomItem]){
+            image.src = this.biomeImages[randomItem]
         }
-        else if (nextValue < this.blockProbabilities[1])
-
         ctx.drawImage(image, worldToScreenX(x), worldToScreenY(y), this.size, this.size)
+    }
+    stableBiome(x, y){
+        const seed = x * 100000 + y
+        const rng = new RandomNumberGenerator(seed)
+        let image = new Image()
+        let randomItem = rng.nextInt(1, this.listLimit-1)
+        let nextValue = rng.nextFloat(0, 1)
+        image.src = this.biomeImages[0]
+        if(nextValue > this.blockRarities[randomItem]){
+            image.src = this.biomeImages[randomItem]
+        }
+        ctx.drawImage(image, x, y, this.size, this.size)
     }
     updateBiome(x, y) {
         if (this.Infinite) {
             this.generateBiome(x, y)
+        }else{
+            this.stableBiome(x, y)
         }
     }
     draw() {

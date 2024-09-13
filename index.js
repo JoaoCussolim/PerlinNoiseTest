@@ -155,7 +155,13 @@ let drawNoise = () => {
     noise.update()
 }
 
-const biome = new Biome({ Infinite: true, biomeImages: ['./images/grass1.png', './images/grass2.png', './images/grass3.png', './images/grass4.png', './images/grass5.png'] })
+const biomeValues = {
+    biomeImages: ['./images/grass1.png', './images/grass2.png', './images/grass3.png', './images/grass4.png', './images/grass5.png'],
+    blockRarities: [0, 0.2, 0.9, 0.98, 0.99],
+    isInfinite: true,
+}
+
+const biome = new Biome({ Infinite: biomeValues.isInfinite, biomeImages: biomeValues.biomeImages, blockRarities: biomeValues.blockRarities})
 
 let animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
