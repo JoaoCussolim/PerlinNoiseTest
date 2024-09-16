@@ -157,14 +157,14 @@ let drawNoise = () => {
 
 const biomeValues = {
     terrainImages: ['./images/grass.png', './images/tallgrass.png', './images/flower.png', './images/flower2.png', './images/mushroom.png', './images/mushroom2.png', './images/stones.png', './images/stones2.png'],
-    treeImages: [],
-    waterImages: [],
+    treeImages: ['./images/tree1.png'],
+    lakeImages: ['./images/grassborderleft.png', './images/grassborderleftup.png', './images/grassborderleftdown.png', './images/grassborderright.png', './images/grassborderrightup.png', './images/grassborderrightdown.png', './images/grassborderup.png', './images/grassborderdown.png'],
     structureImages: [],
     blockRarities: [0, 0.2, 0.98, 0.98, 0.99, 0.98, 0.98, 0.98],
     isInfinite: true,
 }
 
-const biome = new Biome({ Infinite: biomeValues.isInfinite, terrainImages: biomeValues.terrainImages, blockRarities: biomeValues.blockRarities})
+const biome = new Biome({ Infinite: biomeValues.isInfinite, terrainImages: biomeValues.terrainImages, blockRarities: biomeValues.blockRarities, treeImages: biomeValues.treeImages, lakeImages: biomeValues.lakeImages})
 
 let animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
