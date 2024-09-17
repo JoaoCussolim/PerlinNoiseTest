@@ -28,15 +28,15 @@ class Biome {
         }
         if (image.src === normalFloor.src) {
             let randomValue = rng.nextFloat(0, 1)
-            let strucutreGenerated = false
-            if (randomValue > lakeRarity && !this.structureList[seed] && !strucutreGenerated) {
+            let structureGenerated = false
+            if (randomValue > lakeRarity && !this.structureList[seed] && !structureGenerated) {
                 this.lakeGenerate(seed, x, y)
-                strucutreGenerated = true
+                structureGenerated = true
             }
 
-            else if (randomValue > treeRarity && !this.structureList[seed] && !strucutreGenerated) {
+            else if (randomValue > treeRarity && !this.structureList[seed] && !structureGenerated) {
                 this.treeGenerate(seed, x, y)
-                strucutreGenerated = true
+                structureGenerated = true
             }
         }
     }
@@ -141,6 +141,7 @@ class Biome {
                     position: { x: i, y: j },
                     treeSize: this.size,
                 }
+
                 actualPosition.x++
             }
         }
@@ -172,9 +173,9 @@ class Biome {
         }
     }
     updateBiome(seed, x, y) {
-        if (this.Infinite && !this.biomeList[seed]) {
+        if (this.Infinite) {
             this.generateBiome(seed, x, y)
-        } else if (!this.Infinite && !this.biomeList[seed]) {
+        } else {
             this.stableBiome(seed, x, y)
         }
     }
@@ -192,20 +193,26 @@ class Biome {
         const finalX = Math.ceil(stw1x / lineSpace) * lineSpace;
         const finalY = Math.ceil(stw1y / lineSpace) * lineSpace;
 
+        const visibleBiome = []
+
         this.size = lineSpace * scale
 
         for (let y = initialY; y < finalY; y += lineSpace) {
             for (let x = initialX; x < finalX; x += lineSpace) {
                 const seed = x * 100000 + y
-                this.updateBiome(seed, x, y);
-                if (this.biomeList[seed]) {
-                    ctx.drawImage(this.biomeList[seed].image, worldToScreenX(this.biomeList[seed].position.x), worldToScreenY(this.biomeList[seed].position.y), this.size, this.size)
+                if (!this.biomeList[seed]) {
+                    this.updateBiome(seed, x, y);
                 }
-                if (this.structureList[seed]) {
-                    ctx.drawImage(this.structureList[seed].image, worldToScreenX(this.structureList[seed].position.x), worldToScreenY(this.structureList[seed].position.y), this.structureList[seed].treeSize, this.structureList[seed].treeSize)
+                const biome = this.biomeList[seed]
+                const structure = this.structureList[seed]
+                ctx.drawImage(biome.image, worldToScreenX(biome.position.x), worldToScreenY(biome.position.y), this.size, this.size)
+                visibleBiome[seed] = biome
+                if (structure) {
+                    ctx.drawImage(structure.image, worldToScreenX(structure.position.x), worldToScreenY(structure.position.y), structure.treeSize, structure.treeSize)
                 }
             }
         }
+        this.biomeList = visibleBiome
+        console.log(this.structureList)
     }
-
 }
