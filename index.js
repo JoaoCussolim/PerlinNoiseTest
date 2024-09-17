@@ -51,6 +51,12 @@ addEventListener('keydown', (e) => {
     if (e.key === 'e') {
         if (scale < 12) scale++
     }
+    if(e.key === 'l'){
+        biome.changeBiome(water)
+    }
+    if(e.key === 'k'){
+        biome.changeBiome(greenBiome)
+    }
 })
 
 let lineSpace = 30;
@@ -155,16 +161,23 @@ let drawNoise = () => {
     noise.update()
 }
 
-const biomeValues = {
+const greenBiome = {
     terrainImages: ['./images/grass.png', './images/tallgrass.png', './images/flower.png', './images/flower2.png', './images/mushroom.png', './images/mushroom2.png', './images/stones.png', './images/stones2.png'],
     treeImages: ['./images/tree1.png'],
-    lakeImages: ['./images/grassborderleft.png', './images/grassborderleftup.png', './images/grassborderleftdown.png', './images/grassborderright.png', './images/grassborderrightup.png', './images/grassborderrightdown.png', './images/grassborderup.png', './images/grassborderdown.png'],
-    structureImages: [],
+    lakeImages: ['./images/waterborderleft.png', './images/grassborderleftup.png', './images/grassborderleftdown.png', './images/waterborderright.png', './images/grassborderrightup.png', './images/grassborderrightdown.png', './images/waterborderup.png', './images/waterborderdown.png', './images/water.png'],
     blockRarities: [0, 0.2, 0.98, 0.98, 0.99, 0.98, 0.98, 0.98],
     isInfinite: true,
 }
 
-const biome = new Biome({ Infinite: biomeValues.isInfinite, terrainImages: biomeValues.terrainImages, blockRarities: biomeValues.blockRarities, treeImages: biomeValues.treeImages, lakeImages: biomeValues.lakeImages})
+const water = {
+    terrainImages: ['./images/wintergrass.png', './images/wintertallgrass.png', './images/wintergrass.png', './images/wintergrass.png', './images/wintergrass.png', './images/wintergrass.png', './images/wintergrass.png', './images/wintergrass.png'],
+    treeImages: ['./images/tree1.png'],
+    lakeImages: ['./images/water.png', './images/water.png', './images/water.png', './images/water.png', './images/water.png', './images/water.png', './images/water.png', './images/water.png', './images/water.png'],
+    blockRarities: [0, 0.2, 0.98, 0.98, 0.99, 0.98, 0.98, 0.98],
+    isInfinite: true,
+}
+
+const biome = new Biome({biome: greenBiome})
 
 let animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
